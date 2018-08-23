@@ -1,0 +1,8 @@
+__pycache__
+build
+dist
+output_XML
+Output
+PJPChanger-cache
+XML-output
+[0-9]*

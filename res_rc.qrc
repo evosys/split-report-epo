@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="/">
+    <file alias="resources/icon.png">resources/icon.png</file>
+    <file alias="resources/unilever_splash.png">resources/unilever_splash.png</file>
+  </qresource>
+</RCC>
