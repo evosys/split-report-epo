@@ -353,7 +353,6 @@ class mainWindow(QMainWindow, Ui_MainWindow) :
                 'value': -100000,
                 'format': orange})
 
-
             # write header worksheet 1
             ws1.write_row(0, 0, HeadSheet1, headtable)
 
@@ -363,13 +362,11 @@ class mainWindow(QMainWindow, Ui_MainWindow) :
             ws1.set_column(2, 2, 45.43, kar_format) # KAR Email
             ws1.set_column(3, 3, 20.00, centering) # Distributor Code
             ws1.set_column(4, 4, 50.86, bordering) # Distributor Name
-            ws1.set_column(5, 5, 19.71, lefting) # Store Code
+            ws1.set_column(5, 5, 23.86, lefting) # Store Code
             ws1.set_column(6, 6, 48.14, bordering) # Store Name
             ws1.set_column(7, 7, 21.86, centering) # PO Number
             ws1.set_column(8, 8, 16.43, dateformat) # Upload Date
             ws1.set_column(9, len(HeadSheet1) - 1, 16.43, centering) # PO Per-Mounth / PO Status / Status
-            # ws1.set_column(10, 10, 16.43, centering) # PO Status
-            # ws1.set_column(11, 11, 16.43, centering) # Status
 
 
             # writing data worksheet 1
@@ -378,25 +375,24 @@ class mainWindow(QMainWindow, Ui_MainWindow) :
                 for index, txtData in enumerate(x) :
                     ws1.write_row(index+1, 0, x[index])
 
+                    if len(x) != 0 :
+                        ws1.write_number(index+1, 0, index+1)
+
 
             # create auto filter worksheet 1
             lengthData = len(x)
             ws1.autofilter(0, 0, lengthData, len(HeadSheet1) - 1)
 
+
             #################################################################
 
             # Worksheet 2
 
-            # ##############################################################
+            # ###############################################################
 
-
-            # formating diffrent color first header
-            # beginCol = 8
-            # ws2.conditional_format(0, beginCol, 0, len(AdditionalHeadSheet2) + beginCol - 1, {
-            #     'type': 'cell',
-            #     'criteria': '!=',
-            #     'value': -100000,
-            #     'format': softGrey})
+            # freezing first row worksheet 2
+            ws2.freeze_panes(2, 0)
+            ws2.hide_gridlines(2)
 
             # formating diffrent color header worksheet 2
             ws2.conditional_format(0, 7, 0, 7, {
@@ -404,7 +400,6 @@ class mainWindow(QMainWindow, Ui_MainWindow) :
                 'criteria': '!=',
                 'value': -100000,
                 'format': softGreen})
-
 
 
             # formating diffrent color header worksheet 2
@@ -416,7 +411,6 @@ class mainWindow(QMainWindow, Ui_MainWindow) :
 
 
             # write header worksheet 2
-
             ws2.write_row(0, 7, AdditionalHeadSheet2, headtable)
             # merged Data Additional Head
             MrgEvent = self.getEvent(8, HeadSheet2)
@@ -428,13 +422,13 @@ class mainWindow(QMainWindow, Ui_MainWindow) :
 
             ws2.write_row(1, 0, HeadSheet2, headtable)
 
-
+            # setting column
             ws2.set_column(0, 0, 7.00, centering) # No
             ws2.set_column(1, 1, 24.29, bordering) # Area
             ws2.set_column(2, 2, 45.43, kar_format) # KAR Email
             ws2.set_column(3, 3, 22.29, centering) # Distributor Code
             ws2.set_column(4, 4, 50.86, bordering) # Distributor Name
-            ws2.set_column(5, 5, 22.00, centering) # Store Code
+            ws2.set_column(5, 5, 23.86, centering) # Store Code
             ws2.set_column(6, 6, 14.43, dateformat) # Registered
             ws2.set_column(7, 7, 48.14, bordering) # Store Name
             ws2.set_column(8, len(HeadSheet2) - 1, 19.57, centering)
@@ -442,11 +436,15 @@ class mainWindow(QMainWindow, Ui_MainWindow) :
             for lastLog in range(9, len(HeadSheet2), 2) :
                 ws2.set_column(lastLog, lastLog, 19.57, datetimeformat)
 
-            # writing data worksheet 1
+            # writing data worksheet 2
             x = self.search_nested_3d(ResSheet2, uniqueKAR2[count])
             if x:
                 for index, txtData in enumerate(x) :
                     ws2.write_row(index+2, 0, x[index])
+
+                    if len(x) != 0 :
+                        ws2.write_number(index+2, 0, index+1)
+
 
             ws2.conditional_format(2, 8, len(ResSheet2[0][0]), len(HeadSheet2), {
                 'type': 'cell',
@@ -466,9 +464,66 @@ class mainWindow(QMainWindow, Ui_MainWindow) :
                 'value': -100000,
                 'format': softYellow})
 
-            # create auto filter worksheet 1
+
+            # create auto filter worksheet 2
             lengthData = len(x)
             ws2.autofilter(1, 1, lengthData, len(HeadSheet2) - 1)
+
+
+            #################################################################
+
+            # Worksheet 3
+
+            # ###############################################################
+
+            # freezing first row worksheet 3
+            ws3.freeze_panes(1, 0)
+            ws3.hide_gridlines(2)
+
+            # formating diffrent color first header worksheet 1
+            ws3.conditional_format(0, 5, 0, len(HeadSheet3) - 1, {
+                'type': 'cell',
+                'criteria': '!=',
+                'value': -100000,
+                'format': orange})
+
+            # write header worksheet 1
+            ws3.write_row(0, 0, HeadSheet3, headtable)
+
+            # formating column wokrsheet 1
+            ws3.set_column(0, 0, 7.00, centering) # No
+            ws3.set_column(1, 1, 24.29, bordering) # Area
+            ws3.set_column(2, 2, 45.43, kar_format) # KAR Email
+            ws3.set_column(3, 3, 20.00, centering) # Distributor Code
+            ws3.set_column(4, 4, 50.86, bordering) # Distributor Name
+            ws3.set_column(5, 5, 23.86, lefting) # Store Code
+            ws3.set_column(6, 6, 48.14, bordering) # Store Name
+            ws3.set_column(7, 7, 30.57, centering) # Username Store
+            ws3.set_column(8, 8, 16.43, centering) # Password Store
+            ws3.set_column(9, 9, 19.43, dateformat) # Registered
+            ws3.set_column(10, 10, 22.71, centering) # PO Uploaded
+            ws3.set_column(11, 11, 24.57, centering) # Status
+
+            # writing data worksheet 3
+            x = self.search_nested_3d(ResSheet3, uniqueKAR2[count])
+            if x:
+                for index, txtData in enumerate(x) :
+                    ws3.write_row(index+1, 0, x[index])
+
+                    if len(x) != 0 :
+                        ws3.write_number(index+1, 0, index+1)
+
+
+            # create auto filter worksheet 1
+            lengthData = len(x)
+            ws3.autofilter(0, 0, lengthData, len(HeadSheet3) - 1)
+
+            ws3.conditional_format(1, 6, len(x), 6, {
+                'type': 'cell',
+                'criteria': '!=',
+                'value': -100000,
+                'format': softYellow})
+
 
             count+= 1
 

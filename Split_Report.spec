@@ -26,4 +26,4 @@ exe = EXE(pyz,
           strip=False,
           upx=False,
           runtime_tmpdir=None,
-          console=True , version='version.txt', icon='resources\\icon.ico')
+          console=False , version='version.txt', icon='resources\\icon.ico')
