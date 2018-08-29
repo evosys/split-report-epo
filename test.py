@@ -1,70 +1,147 @@
-import xlrd
+import itertools
 
-SHEET1 = 'PO Uploaded'
-SHEET2 = 'User Active'
-SHEET3 = 'Production List User'
+lst = [
+['Arnold-Herman.Taihuttu@unilever.com', 'PT DIPTA PERMATA TATASARI CITAYAM LMT'],
+['Arnold-Herman.Taihuttu@unilever.com', 'PT DIPTA PERMATA TATASARI CITAYAM LMT'],
+['Asyrofi-Ainul.Huda@unilever.com', 'PT. GARUDA MITRA WICAKSANA'],
+['Asyrofi-Ainul.Huda@unilever.com', 'PT. GARUDA MITRA WICAKSANA'],
+['Donal.Gultom@unilever.com', 'PT. PAKMU MANDIRI UTAMA LMT'],
+['Regina.Simanjuntak@unilever.com', 'PT MAHAMERU LMT'],
+['Arnold-Herman.Taihuttu@unilever.com', 'PT. WAHID CIANJUR - LMT'],
+['Arnold-Herman.Taihuttu@unilever.com', 'PT. WAHID CIANJUR - LMT'],
+['Arnold-Herman.Taihuttu@unilever.com', 'PT. WAHID CIANJUR - LMT'],
+['Arnold-Herman.Taihuttu@unilever.com', 'PT. WAHID CIANJUR - LMT'],
+['Regina.Simanjuntak@unilever.com', 'CV HANA CENTRAL II LMT'],
+['Semuel.Tangke@unilever.com', 'PT. MULYATINDO INTI RAYA'],
+['Semuel.Tangke@unilever.com', 'PT. MULYATINDO INTI RAYA'],
+['Semuel.Tangke@unilever.com', 'PT. MULYATINDO INTI RAYA'],
+['Semuel.Tangke@unilever.com', 'PT. MULYATINDO INTI RAYA'],
+['Semuel.Tangke@unilever.com', 'PT. MULYATINDO INTI RAYA'],
+['Semuel.Tangke@unilever.com', 'PT. MULYATINDO INTI RAYA'],
+['Semuel.Tangke@unilever.com', 'PT. MULYATINDO INTI RAYA'],
+['Semuel.Tangke@unilever.com', 'PT. MULYATINDO INTI RAYA'],
+['Semuel.Tangke@unilever.com', 'PT. MULYATINDO INTI RAYA'],
+['Semuel.Tangke@unilever.com', 'PT. MULYATINDO INTI RAYA'],
+['Benny-Setiawan.Handriyanto@unilever.com', 'PT SEKAR NUSA BARUNA'],
+['Benny-Setiawan.Handriyanto@unilever.com', 'PT SEKAR NUSA BARUNA'],
+['Benny-Setiawan.Handriyanto@unilever.com', 'PT. SEKAR NUSA BARUNA MADIUN'],
+['Johan.Wahjoedi@unilever.com', 'PT MITRA USAHA SUKSES SEJAHTERA MOJOKERTO LMT'],
+['Indra-Harry.Perdana@unilever.com', 'PT. SRIKAYA MITRA MAKMUR LMT'],
+['Johan.Wahjoedi@unilever.com', 'PT.MITRA USAHA SUKSES SEJAHTERA JOMBANG - LMT'],
+['Yudho.Kusumo@unilever.com', 'PT PANAHMAS DWITAMA DISTRINDO'],
+['Yudho.Kusumo@unilever.com', 'PT PANAHMAS DWITAMA DISTRINDO JEMBER'],
+['Yudho.Kusumo@unilever.com', 'PT PANAHMAS DWITAMA DISTRINDO'],
+['Yudho.Kusumo@unilever.com', 'PT PANAHMAS DWITAMA DISTRINDO'],
+['Jufry-Jimmy.Panjaitan@unilever.com', 'PT. INTIBHARUMAS PALEMBANG'],
+['Jufry-Jimmy.Panjaitan@unilever.com', 'PT. INTIBHARUMAS PALEMBANG'],
+['Jufry-Jimmy.Panjaitan@unilever.com', 'PT. INTIBHARUMAS PALEMBANG'],
+['Jufry-Jimmy.Panjaitan@unilever.com', 'PT. INTIBHARUMAS PALEMBANG'],
+['Jufry-Jimmy.Panjaitan@unilever.com', 'PT. INTIBHARUMAS PALEMBANG'],
+['Jufry-Jimmy.Panjaitan@unilever.com', 'PT. INTIBHARUMAS PALEMBANG'],
+['Jufry-Jimmy.Panjaitan@unilever.com', 'PT. INTIBHARUMAS PALEMBANG'],
+['Jufry-Jimmy.Panjaitan@unilever.com', 'PT. INTIBHARUMAS PALEMBANG'],
+['Jufry-Jimmy.Panjaitan@unilever.com', 'PT. INTIBHARUMAS PALEMBANG'],
+['Jufry-Jimmy.Panjaitan@unilever.com', 'PT. INTIBHARUMAS PALEMBANG'],
+['Jufry-Jimmy.Panjaitan@unilever.com', 'PT. INTIBHARUMAS PALEMBANG'],
+['Jufry-Jimmy.Panjaitan@unilever.com', 'PT. INTIBHARUMAS PALEMBANG'],
+['Donal.Gultom@unilever.com', 'PT. MIDISINDO CITRA SARI'],
+['Dzawil.Ula@unilever.com', 'SINAR ANUGERAH'],
+['Dzawil.Ula@unilever.com', 'SINAR ANUGERAH'],
+['Dzawil.Ula@unilever.com', 'SINAR ANUGERAH'],
+['Dzawil.Ula@unilever.com', 'SINAR ANUGERAH'],
+['Dzawil.Ula@unilever.com', 'CV SINAR ANUGERAH PATI'],
+['Dzawil.Ula@unilever.com', 'CV SINAR ANUGERAH PATI'],
+['Jun-Holland.Simamora@unilever.com', 'CV. SERBA SERBI MT PADANG'],
+['Jun-Holland.Simamora@unilever.com', 'CV. SERBA SERBI MT PADANG'],
+['ony.hendrayana@unilever.com', 'PT. BAHAGIA INTRA NIAGA'],
+['ony.hendrayana@unilever.com', 'PT. BAHAGIA INTRA NIAGA'],
+['ony.hendrayana@unilever.com', 'PT. BAHAGIA INTRA NIAGA'],
+['ony.hendrayana@unilever.com', 'PT. BAHAGIA INTRA NIAGA'],
+['ony.hendrayana@unilever.com', 'PT. BAHAGIA INTRA NIAGA'],
+['ony.hendrayana@unilever.com', 'PT. BAHAGIA INTRA NIAGA'],
+['ony.hendrayana@unilever.com', 'PT. BAHAGIA INTRA NIAGA'],
+['SolaGratia-YS.Samosir@unilever.com', 'PT. SUBUR LUMINTU'],
+['SolaGratia-YS.Samosir@unilever.com', 'PT. SUBUR LUMINTU'],
+['SolaGratia-YS.Samosir@unilever.com', 'PT. SUBUR LUMINTU'],
+['SolaGratia-YS.Samosir@unilever.com', 'PT. SUBUR LUMINTU'],
+['SolaGratia-YS.Samosir@unilever.com', 'PT. SUBUR LUMINTU'],
+['Firmansyah.Sediono@unilever.com', 'PT Adam Dani Lestari MEDAN'],
+['Ombun-Rico.Sitorus@unilever.com', 'PT. BINTANG SEJAHTERA BATAM'],
+['Ombun-Rico.Sitorus@unilever.com', 'PT. BINTANG SEJAHTERA BATAM'],
+['Ombun-Rico.Sitorus@unilever.com', 'PT. BINTANG SEJAHTERA BATAM'],
+['Firmansyah.Sediono@unilever.com', 'PT Adam Dani Lestari MEDAN'],
+['Firmansyah.Sediono@unilever.com', 'PT Adam Dani Lestari MEDAN'],
+['Firmansyah.Sediono@unilever.com', 'PT Adam Dani Lestari MEDAN'],
+['Firmansyah.Sediono@unilever.com', 'PT Adam Dani Lestari MEDAN'],
+['Maydita-Diah.Setiawati@unilever.com', 'RAS MT PEKANBARU'],
+['Razaq-Heru.Santoso@unilever.com', 'PT. BINTANGYASA NIAGATAMA ABADI LMT BALIKPAPAN'],
+['Razaq-Heru.Santoso@unilever.com', 'PT. BINTANGYASA NIAGATAMA ABADI LMT BALIKPAPAN'],
+['Razaq-Heru.Santoso@unilever.com', 'PT. BINTANGYASA NIAGATAMA ABADI LMT BALIKPAPAN'],
+['Maydita-Diah.Setiawati@unilever.com', 'PPUP MT PEKANBARU'],
+['Yudho.Kusumo@unilever.com', 'PT. PANAHMAS DWITAMA DISTRINDO '],
+['Angga.Baresky@unilever.com', 'CV NAGA MAS'],
+['Angga.Baresky@unilever.com', 'CV BRATAJAYA ULIARTHA RANTAU PRAPAT'],
+['Angga.Baresky@unilever.com', 'CV BRATAJAYA ULIARTHA RANTAU PRAPAT'],
+['Angga.Baresky@unilever.com', 'CV BRATAJAYA ULIARTHA RANTAU PRAPAT'],
+['Angga.Baresky@unilever.com', 'PT. PPUP MT PEKANBARU'],
+['Firmansyah.Sediono@unilever.com', 'PT Adam Dani Lestari MEDAN'],
+['Firmansyah.Sediono@unilever.com', 'PT Adam Dani Lestari MEDAN'],
+['Firmansyah.Sediono@unilever.com', 'PT Adam Dani Lestari MEDAN'],
+['Firmansyah.Sediono@unilever.com', 'PT Adam Dani Lestari MEDAN'],
+['Firmansyah.Sediono@unilever.com', 'PT Adam Dani Lestari MEDAN'],
+['Firmansyah.Sediono@unilever.com', 'PT Adam Dani Lestari MEDAN'],
+['Firmansyah.Sediono@unilever.com', 'PT Adam Dani Lestari MEDAN'],
+['Firmansyah.Sediono@unilever.com', 'PT Adam Dani Lestari MEDAN'],
+['Firmansyah.Sediono@unilever.com', 'PT Adam Dani Lestari MEDAN'],
+['Firmansyah.Sediono@unilever.com', 'PT Adam Dani Lestari MEDAN'],
+['Firmansyah.Sediono@unilever.com', 'PT Adam Dani Lestari MEDAN'],
+['Firmansyah.Sediono@unilever.com', 'PT Adam Dani Lestari MEDAN'],
+['Firmansyah.Sediono@unilever.com', 'PT Adam Dani Lestari MEDAN'],
+['Firmansyah.Sediono@unilever.com', 'PT Adam Dani Lestari MEDAN'],
+['Firmansyah.Sediono@unilever.com', 'PT Adam Dani Lestari MEDAN'],
+['Firmansyah.Sediono@unilever.com', 'PT Adam Dani Lestari MEDAN'],
+['Firmansyah.Sediono@unilever.com', 'PT Adam Dani Lestari MEDAN'],
+['Firmansyah.Sediono@unilever.com', 'PT Adam Dani Lestari MEDAN'],
+['Firmansyah.Sediono@unilever.com', 'PT Adam Dani Lestari MEDAN'],
+['Frans-Syeftya.Defrata@unilever.com', 'PT. BINA USAHA PRATAMA LMT'],
+['Frans-Syeftya.Defrata@unilever.com', 'PT. BINA USAHA PRATAMA LMT'],
+['Akhmad.Darwin@unilever.com', 'CV. TEMAN JAYA ABADI LMT'],
+['Angga.Baresky@unilever.com', 'CV BINTANG SAHABAT LMT'],
+['Iksan.Saputra@unilever.com', 'UD. JAYA SUBUR BANGKALAN LMT'],
+['Iksan.Saputra@unilever.com', 'UD. JAYA SUBUR BANGKALAN LMT'],
+['Maydita-Diah.Setiawati@unilever.com', 'PT. PPUP MT PEKANBARU'],
+['Djunaidie.Setyawan@unilever.com', 'PT. PLAMBO PRATAMA JS TEGAL'],
+['Djunaidie.Setyawan@unilever.com', 'PT. PLAMBO PRATAMA JS TEGAL'],
+['Djunaidie.Setyawan@unilever.com', 'PT. PLAMBO PRATAMA JS TEGAL'],
+['Djunaidie.Setyawan@unilever.com', 'PT. PLAMBO PRATAMA JS TEGAL'],
+['Rayi.Ardhanariswari@unilever.com', 'CV BAHAGIA INTRA NIAGA GRESIK MT'],
+['Rayi.Ardhanariswari@unilever.com', 'PT. BAHAGIA INTRA NIAGA TUBAN - MT'],
+['Rayi.Ardhanariswari@unilever.com', 'PT. BAHAGIA INTRA NIAGA TUBAN - MT'],
+['Wahyu.Handriyanto@unilever.com', 'CV. SUMBER JITU LMT'],
+['Wahyu.Handriyanto@unilever.com', 'CV. SUMBER JITU LMT']
+]
 
-def x(SheetName) :
 
-    workbook = xlrd.open_workbook('xx.xlsx')
-    sheet = workbook.sheet_by_name(SheetName)
+smal = [
+['key-R', 'PT MAHAMERU LMT'],
+['key-R', 'PT MAHAMERU LMT'],
+['key-R', 'CV HANA CENTRAL II LMT'],
+['key-R', 'CV HANA CENTRAL II LMT'],
+['Arnold-Herman.Taihuttu@unilever.com', 'PT. WAHID CIANJUR - LMT'],
+['Arnold-Herman.Taihuttu@unilever.com', 'PT. WAHID CIANJUR - LMT'],
+['Arnold-Herman.Taihuttu@unilever.com', 'PT. WAHID CIANJUR - LMT'],
+['Arnold-Herman.Taihuttu@unilever.com', 'PT. WAHID CIANJUR - LMT'],
 
-    curr_row = 0
-    row_list = []
-    new_row = []
+['key-x', 'PT SEKAR NUSA BARUNA'],
+['key-x', 'PT SEKAR NUSA BARUNA'],
+['key-x', 'PT. SEKAR NUSA BARUNA MADIUN']
+]
 
-    while curr_row < (sheet.nrows - 1):
-        curr_row += 1
-        row = sheet.row_values(curr_row)
-        row_list.append(row)
-        # new_row.append([[ele.value for ele in each] for each in row_list])
-    return row_list
-
-
-def xz(SheetName) :
-
-    workbook = xlrd.open_workbook('xx.xlsx')
-    sheet = workbook.sheet_by_name(SheetName)
-
-    curr_row = 0
-    row_list = []
-    new_row = []
-
-    row = list(filter(None, sheet.row_values(1)))
-
-    for i in row :
-        new_row.append(i)
-
-    # for z in row :
-    #     filt = filter(None, z)
-    #     for i in filt :
-    #         new_row.append(filt)
-        # new_row.append([[ele.value for ele in each] for each in row_list])
-    return row
-
-def ss() :
-
-    workbook = xlrd.open_workbook('xx.xlsx')
-    sheet = workbook.sheet_by_name(SHEET2)
-
-    sheet.conditional_format(2, 8, 100, 100, {
-                'type': 'cell',
-                'criteria': 'equal to',
-                'value': '"Yes"',
-                'format': orange})
-
-    orange = workbook.add_format({'bg_color': '#F5D76E'})
+res = [[key, [n for _, n in grp]] for key, grp in itertools.groupby(smal, lambda x: x[0])]
 
 
+result = [[key, [n for _, n in grp]] for key, grp in itertools.groupby(lst, key=lambda x: x[0])]
 
-    # for z in row :
-    #     filt = filter(None, z)
-    #     for i in filt :
-    #         new_row.append(filt)
-        # new_row.append([[ele.value for ele in each] for each in row_list])
-    return row
+result2 = [[key, [n for _, n in grp]] for key, grp in itertools.groupby(result, key=lambda x: x[0])]
 
-ss()
-
-# print(xz(SHEET2))
-
+print(res)

@@ -198,6 +198,24 @@ class mainWindow(QMainWindow, Ui_MainWindow) :
         result.remove('KAR Email')
         return result
 
+    # get all distributor on sheet
+    def getAllDISTSheet(self, SheetName) :
+        result = []
+
+        sheet = self.funcXLRD(str(SheetName))
+
+        totalrow = sheet.nrows - 1
+
+        rh = self.get_cell_range(SheetName, 4, 0, 4, totalrow)
+
+        for z in rh :
+            filt = filter(None, z)
+            for i in filt :
+                result.append(i)
+
+        result.remove('Distributor Name')
+        return result
+
 
     # get unique KAR email on sheet
     def getUniqueAllKARSheet(self, SheetName) :
@@ -205,6 +223,42 @@ class mainWindow(QMainWindow, Ui_MainWindow) :
 
         # remove duplicate KAR
         result = [KAR[i] for i in range(len(KAR)) if i == KAR.index(KAR[i])]
+        result = sorted(result)
+
+        return result
+
+
+    # get unique Distributor on sheet
+    def getUniqueAllDISTSheet(self, SheetName) :
+        res = []
+        oth = []
+
+        DIST = self.getAllDISTSheet(SheetName)
+        KAR = self.getAllKARSheet(SheetName)
+        # tmpKAR = self.getUniqueAllKARSheet(SheetName)
+
+        doub = [[i, j] for i, j in zip(KAR, DIST)]
+        # doub = list(zip(KAR, DIST))
+        # print(len(KAR))
+        # print(len(DIST))
+        sorting = sorted(doub)
+
+
+
+        # for key, grp in itertools.groupby(doub, key = lambda x:x[0]) :
+            # b = [key, [n for _, n in grp]]
+            # res.append(b)
+
+        # print(doub)
+
+        # grouping list by KAR name
+        result = [[key, [n for _, n in grp]] for key, grp in itertools.groupby(sorting, key=lambda x: x[0])]
+
+        # remove duplicate DIST
+        # result = [doub[i] for i in range(len(doub[1])) if i == doub.index(doub[i])]
+
+
+
 
         return result
 
@@ -223,7 +277,7 @@ class mainWindow(QMainWindow, Ui_MainWindow) :
         return result
 
 
-    def FileName(self, ListMail) :
+    def FileNameKAR(self, ListMail) :
         result = []
 
         for i in ListMail:
@@ -233,6 +287,40 @@ class mainWindow(QMainWindow, Ui_MainWindow) :
             result.append(x.title())
 
         return result
+
+    def FileNameDist(self, ListDist) :
+
+        KARres = []
+        result = []
+        # result = [KAR[i] for i in range(len(KAR)) if i == KAR.index(KAR[i])]
+
+        for i in ListDist :
+            KARres.append(i[1])
+
+        for k in KARres :
+            x = self.removeDuplicatesCustom(k)
+            all_but_last = ', '.join(x[:-1])
+            last = x[-1]
+
+            j = " & ".join([", ".join(x[:-1]),x[-1]] if len(x) > 2 else x)
+
+            result.append(j)
+
+        return result
+
+    def removeDuplicatesCustom(self, listofElements):
+
+        # Create an empty list to store unique elements
+        uniqueList = []
+
+        # Iterate over the original list and for each element
+        # add it to uniqueList, if its not already there.
+        for elem in listofElements:
+            if elem not in uniqueList:
+                uniqueList.append(elem)
+
+        # Return the list of unique elements
+        return uniqueList
 
 
     # search and filter 2D
@@ -245,6 +333,7 @@ class mainWindow(QMainWindow, Ui_MainWindow) :
                     result.append(mylist[i])
 
         return result
+
 
     # search and filter 3D
     def search_nested_3d(self, mylist, filtering) :
@@ -265,6 +354,8 @@ class mainWindow(QMainWindow, Ui_MainWindow) :
 
         return cleanList
 
+
+
     def getEvent(self, firstCol, listHead) :
         result = []
         for mrged in range(firstCol, len(listHead), 2) :
@@ -277,14 +368,20 @@ class mainWindow(QMainWindow, Ui_MainWindow) :
         return ListData.remove(ListData[0])
 
 
-
     def BtnCnv1(self) :
         valSheet1 = self.sheetsplit(SHEET1)
         HeadSheet1 = self.getHeaderDataTable(0, SHEET1)
         HeadSheet2 = self.getHeaderDataTable(1, SHEET2)
         HeadSheet3 = self.getHeaderDataTable(0, SHEET3)
-        print(valSheet1)
+        AllDist = self.getAllDISTSheet(SHEET1)
+        AllDistUnique = self.getUniqueAllDISTSheet(SHEET2)
+        uniqueKAR2 = self.getUniqueAllKARSheet(SHEET2)
+        x = self.FileNameDist(AllDistUnique)
 
+
+        # print(len(x))
+        print(x)
+        # print(uniqueKAR2)
 
     def BtnCnv(self) :
         current_dir = os.getcwd()
@@ -295,7 +392,8 @@ class mainWindow(QMainWindow, Ui_MainWindow) :
         resultPath = Path(os.path.abspath(os.path.join(current_dir, NEWDIR)))
 
         # uniqueKAR1 = self.getUniqueAllKARSheet(SHEET1)
-        uniqueKAR2 = self.getUniqueAllKARSheet(SHEET2)
+        AllKARUnique = self.getUniqueAllKARSheet(SHEET2)
+        AllDISTUnique = self.getUniqueAllDISTSheet(SHEET2)
         # uniqueKAR3 = self.getUniqueAllKARSheet(SHEET3)
         HeadSheet1 = self.getHeaderDataTable(0, SHEET1)
         HeadSheet2 = self.getHeaderDataTable(1, SHEET2)
@@ -310,7 +408,7 @@ class mainWindow(QMainWindow, Ui_MainWindow) :
 
         count = 0
 
-        for NameFile in self.FileName(uniqueKAR2) :
+        for NameFile in self.FileNameDist(AllDISTUnique) :
             resPathFile = self.CreateDir(current_dir, NEWDIR, NameFile)
 
             workbook = xlsxwriter.Workbook(resPathFile, {'default_date_format': 'dd-mm-yy', 'strings_to_urls': True})
@@ -370,7 +468,7 @@ class mainWindow(QMainWindow, Ui_MainWindow) :
 
 
             # writing data worksheet 1
-            x = self.search_nested_3d(ResSheet1, uniqueKAR2[count])
+            x = self.search_nested_3d(ResSheet1, AllKARUnique[count])
             if x:
                 for index, txtData in enumerate(x) :
                     ws1.write_row(index+1, 0, x[index])
@@ -437,7 +535,7 @@ class mainWindow(QMainWindow, Ui_MainWindow) :
                 ws2.set_column(lastLog, lastLog, 19.57, datetimeformat)
 
             # writing data worksheet 2
-            x = self.search_nested_3d(ResSheet2, uniqueKAR2[count])
+            x = self.search_nested_3d(ResSheet2, AllKARUnique[count])
             if x:
                 for index, txtData in enumerate(x) :
                     ws2.write_row(index+2, 0, x[index])
@@ -505,7 +603,7 @@ class mainWindow(QMainWindow, Ui_MainWindow) :
             ws3.set_column(11, 11, 24.57, centering) # Status
 
             # writing data worksheet 3
-            x = self.search_nested_3d(ResSheet3, uniqueKAR2[count])
+            x = self.search_nested_3d(ResSheet3, AllKARUnique[count])
             if x:
                 for index, txtData in enumerate(x) :
                     ws3.write_row(index+1, 0, x[index])
