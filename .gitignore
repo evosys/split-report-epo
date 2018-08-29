@@ -5,4 +5,6 @@ output_XML
 Output
 PJPChanger-cache
 XML-output
+test.py
+*.xlsx
 [0-9]*
